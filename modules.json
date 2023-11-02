@@ -1,5 +1,6 @@
 [
   "schain",
+  "appnexus",
   "onetagBidAdapter",
   "sovrnBidAdapter"
 ]
