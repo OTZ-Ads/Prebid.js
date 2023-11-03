@@ -2,7 +2,7 @@ name: OTZ-Ads - Prebid.js
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "feat/notification-slack" ]
   pull_request:
     branches: [ "master" ]
 
@@ -10,6 +10,14 @@ jobs:
   build:
     runs-on: ubuntu-latest  
     steps:
+    - name: Send Slack Notification - Started      
+      run: |
+        REPO_NAME=$(basename `git rev-parse --show-toplevel`)
+        curl -X POST -H 'Content-type: application/json' --data '{
+          "text": "Release $REPO_NAME iniciada."
+        }' ${{ secrets.SLACK_WEBHOOK_URL }}
+
+
     - name: Checkout repository    
       uses: actions/checkout@v4
 
@@ -41,3 +49,16 @@ jobs:
         --data '{
           "files": ["https://tags.otzads.net/prebid/prebid.js"]
         }'
+
+    - name: Send Slack Notification - Finished
+      id: slack-notification      
+      run: |
+        REPO_NAME=$(basename `git rev-parse --show-toplevel`)
+        if [[ ${{ job.status }} == 'success' ]]; then
+          STATUS="Bem-Sucedido"
+        else
+          STATUS="Falhou"
+        fi
+        curl -X POST -H 'Content-type: application/json' --data '{
+          "text": "Release $REPO_NAME $STATUS."
+        }' ${{ secrets.SLACK_WEBHOOK_URL }}
