@@ -9,15 +9,18 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest  
-    steps:
-    - name: Send Slack Notification - Started      
-      run: |
-        REPO_NAME=$(basename `git rev-parse --show-toplevel`)
-        curl -X POST -H 'Content-type: application/json' --data '{
-          "text": "Release $REPO_NAME iniciada."
-        }' ${{ secrets.SLACK_WEBHOOK_URL }}
-
-
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      
+    steps:    
+    - name: Slack Notification - Started
+      uses: actions/slack@v1
+      with: 
+        status: starting
+        channel: '#builds'
+        message: Starting Build ${{ github.repository }}
+      if: always()
+        
     - name: Checkout repository    
       uses: actions/checkout@v4
 
@@ -49,16 +52,11 @@ jobs:
         --data '{
           "files": ["https://tags.otzads.net/prebid/prebid.js"]
         }'
-
-    - name: Send Slack Notification - Finished
-      id: slack-notification      
-      run: |
-        REPO_NAME=$(basename `git rev-parse --show-toplevel`)
-        if [[ ${{ job.status }} == 'success' ]]; then
-          STATUS="Bem-Sucedido"
-        else
-          STATUS="Falhou"
-        fi
-        curl -X POST -H 'Content-type: application/json' --data '{
-          "text": "Release $REPO_NAME $STATUS."
-        }' ${{ secrets.SLACK_WEBHOOK_URL }}
+       
+    - name: Slack Notification - Finished
+      uses: actions/slack@v1
+      with: 
+        status: ${{ job.status }}
+        channel: '#meetups'
+        message: Deploy ${{ job.status }}
+      if: always() 
