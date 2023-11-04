@@ -19,7 +19,7 @@ jobs:
       with:  
         payload: |
           {
-            "text": "Build Started: ${{ github.repository }}"
+            "text": "Build Started: ${{ github.repository }}",
             "blocks": [
               {
                 "type": "section",
