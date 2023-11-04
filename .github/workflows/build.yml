@@ -72,13 +72,13 @@ jobs:
       with:  
         payload: |
           {
-            "text": "Build Status: ${{ job.status }}\n${{ GITHUB_JOB }}",
+            "text": "Build Status: ${{ job.status }}\n ${{ runner }}",
             "blocks": [
               {
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": "Build Status: ${{ job.status }}\n${{ GITHUB_JOB }}"
+                  "text": "Build Status: ${{ job.status }}\n ${{ runner }}"
                 }
               }
             ]
