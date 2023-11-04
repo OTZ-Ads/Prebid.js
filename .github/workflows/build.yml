@@ -9,7 +9,31 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest  
-    steps:
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      
+    steps:    
+    - name: Slack Notification
+      id: slack
+      uses: slackapi/slack-github-action@v1.24.0
+      with:  
+        payload: |
+          {
+            "text": "Build Started: ${{ github.repository }}",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "Build Started: ${{ github.repository }}"
+                }
+              }
+            ]
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
     - name: Checkout repository    
       uses: actions/checkout@v4
 
@@ -40,4 +64,17 @@ jobs:
         -H "Content-Type: application/json" \
         --data '{
           "files": ["https://tags.otzads.net/prebid/prebid.js"]
-        }'
+        }'       
+
+    - name: Slack Notification - Status
+      id: slack-status
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        payload: |
+          {
+            "text": "Build Status: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        
