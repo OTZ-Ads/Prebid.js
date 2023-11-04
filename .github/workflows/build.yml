@@ -13,14 +13,27 @@ jobs:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       
     steps:    
-    - name: Slack Notification - Started
-      uses: actions/slack@v1
-      with: 
-        status: starting
-        channel: '#builds'
-        message: Starting Build ${{ github.repository }}
-      if: always()
-        
+    - name: Slack Notification
+      id: slack
+      uses: slackapi/slack-github-action@v1.24.0
+      with:  
+        payload: |
+          {
+            "text": "GitHub Action build: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "GitHub Action build: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                }
+              }
+            ]
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
     - name: Checkout repository    
       uses: actions/checkout@v4
 
@@ -53,10 +66,23 @@ jobs:
           "files": ["https://tags.otzads.net/prebid/prebid.js"]
         }'
        
-    - name: Slack Notification - Finished
-      uses: actions/slack@v1
-      with: 
-        status: ${{ job.status }}
-        channel: '#meetups'
-        message: Deploy ${{ job.status }}
-      if: always() 
+    - name: Slack Notification
+      id: slack-finish
+      uses: slackapi/slack-github-action@v1.24.0
+      with:  
+        payload: |
+          {
+            "text": "GitHub Action build: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "GitHub Action build: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                }
+              }
+            ]
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
