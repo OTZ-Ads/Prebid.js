@@ -64,25 +64,17 @@ jobs:
         -H "Content-Type: application/json" \
         --data '{
           "files": ["https://tags.otzads.net/prebid/prebid.js"]
-        }'
-       
-    - name: Slack Notification
-      id: slack-finish
+        }'       
+
+    - name: Slack Notification - Status
+      id: slack-status
       uses: slackapi/slack-github-action@v1.24.0
-      with:  
+      with:
         payload: |
           {
-            "text": "Build Status: ${{ job.status }}\n ${{ github.action }}",
-            "blocks": [
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "Build Status: ${{ job.status }}\n ${{ github.action }}"
-                }
-              }
-            ]
+            "text": "Build Status: ${{ job.status }}\nURL: ${{ steps.slack-start.outputs.SLACK_MESSAGE }}"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        
