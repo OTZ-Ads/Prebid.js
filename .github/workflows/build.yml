@@ -19,16 +19,38 @@ jobs:
       with:  
         payload: |
           {
-            "text": "Build Started: ${{ github.repository }}",
-            "blocks": [
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "Build Started: ${{ github.repository }}"
-                }
-              }
-            ]
+          	"attachments": [
+          		{
+          			"color": "#dcdcdc",
+          			"blocks": [
+          				{
+          					"type": "header",
+          					"text": {
+          						"type": "plain_text",
+          						"text": ":hammer_and_wrench:Build Started: ${{ github.repository }} :hammer_and_wrench:",
+          						"emoji": true
+          					}
+          				},
+          				{
+          					"type": "divider"
+          				},
+          				{
+          					"type": "section",
+          					"text": {
+          						"type": "mrkdwn",
+          						"text": "*Ref*\n `${{ github.repository }}`"
+          					}
+          				},
+          				{
+          					"type": "section",
+          					"text": {
+          						"type": "mrkdwn",
+          						"text": "*Repo Action URL*\n `https://github.com/OTZ-Ads/Prebid.js/actions/workflows/build.yml`"
+          					}
+          				}
+          			]
+          		}
+          	]
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -67,14 +89,14 @@ jobs:
         }'       
 
     - name: Slack Notification - Status
-      id: slack-status
-      uses: slackapi/slack-github-action@v1.24.0
-      with:
-        payload: |
-          {
-            "text": "Build Status: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-          }
+      id: slack-status      
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-        
+      run: |
+        if [[ ${{ job.status }} == 'success' ]]; then          
+          SLACK_MESSAGE='{"attachments": [{"color": "#66bf66","blocks": [{"type": "section","text": {"type": "mrkdwn","text": "*Status*\n:white_check_mark:"}}]}]}'
+        else
+          SLACK_MESSAGE='{"attachments": [{"color": "#ef6666","blocks": [{"type": "section","text": {"type": "mrkdwn","text": "*Status*\n:x:"}}]}]}'
+        fi
+        curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$SLACK_MESSAGE\"}" $SLACK_WEBHOOK_URL
