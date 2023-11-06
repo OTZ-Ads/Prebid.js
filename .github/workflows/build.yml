@@ -38,7 +38,7 @@ jobs:
           					"type": "section",
           					"text": {
           						"type": "mrkdwn",
-          						"text": "*Ref*\n `${{ github.repository }}`"
+          						"text": "*Ref*\n `${{ github.event.head_commit.url }}`"
           					}
           				},
           				{
