@@ -38,7 +38,7 @@ jobs:
           					"type": "section",
           					"text": {
           						"type": "mrkdwn",
-          						"text": "*Ref*\n `${{ github.repository }}`"
+          						"text": "*Ref*\n `${{ github.event.head_commit.url }}`"
           					}
           				},
           				{
@@ -99,4 +99,5 @@ jobs:
         else
           SLACK_MESSAGE='{"attachments": [{"color": "#ef6666","blocks": [{"type": "section","text": {"type": "mrkdwn","text": "*Status*\n:x:"}}]}]}'
         fi
-        curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$SLACK_MESSAGE\"}" $SLACK_WEBHOOK_URL
+        curl -X POST -H 'Content-type: application/json' --data "$SLACK_MESSAGE" $SLACK_WEBHOOK_URL
+                          
