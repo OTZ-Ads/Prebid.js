@@ -1,4 +1,7 @@
 [
+  "userId",
+  "sharedIdSystem",
+  "criteoIdSystem",
   "schain",
   "appnexusBidAdapter",
   "onetagBidAdapter",
