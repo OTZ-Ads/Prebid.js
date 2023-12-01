@@ -2,6 +2,7 @@
   "userId",
   "sharedIdSystem",
   "criteoIdSystem",
+  "priceFloors",
   "schain",
   "appnexusBidAdapter",
   "onetagBidAdapter",
